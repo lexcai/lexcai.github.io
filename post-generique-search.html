@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Article - Generique Search SQL & JS</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Boudeau Axel</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="articles.html">Articles</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Generique Search SQL & JS</h1>
+                            <h2 class="subheading">Mise en place de Search au sein de la solution</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="#!">Boudeau Axel</a>
+                                le 25 Août 2021
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Les "Generique Search"</h2>
+                        <p>C'est un composant qui permet d'utiliser du code SQL ou JS et qui permet de retourné un tableau de résultat, c'est la partie back-end qui est utilisé, c'est une compétence que je ne maîtrise pas totalement ce qui est me permet d'approfondir mes connaissances.</p>
+                        <hr/>
+                        <h2 class="section-heading">Generique Search SQL</h2>
+                        <p>Voici le code pour une Generique Search en SQL : <br/><code>--Training, TrainingSearch
+                            <br/>
+                            SELECT 'uuid_d9b88217-d680-4878-abbe-94cbe132e8c1' ,
+                            <br/>
+                            (SELECT TOP 1 doc.documentidentifier
+                            FROM v2_TRAINNING_5Q$JT train
+                            <br/>
+                            INNER JOIN v2_DocumentMetaData_0Z14K V2M ON train.documentId=V2M.documentid
+                            <br/>
+                            INNER JOIN V_DOCUMENT doc ON doc.documentId = train.documentId
+                            <br/>
+                            INNER JOIN v2_DcmMtDt_0Z14K_p_ptnId_6KYRZ meta ON meta.v2_DocumentMetaData_0Z14K = V2M.v2_DocumentMetaData_0Z14K
+                            <br/>
+                            WHERE meta.idNumber_9LV7R = <%=SqlParameters.add(AppVars.patientId)%> ORDER BY doc.documentId DESC)
+                            <br/>
+                            AS documentId
+                            <br>
+                            , 'Training' AS application
+                            <br>
+                            , 'Training' AS entryPoint
+                            <br>
+                            , 'edit' AS editMode</code></p>
+                            <p>Concernant <code>FROM v2_TRAINNING_5Q$JT train</code> c'est la vue de la base de données sur laquelle on va travailler et <code>train</code> est l'alias que l'on lui donne.</p>
+                            <p>Le premier Select comprend l'<code>uuid</code> du formulaire que l'on a crée et on récupere cet <code>uuid</code> dans la partie back-end.</p>
+                            <p>Ensuite <code>v2_DocumentMetaData_0Z14K V2M ON train.documentId=V2M.documentid</code> pour <code>v2_DocumentMetaData_0Z14K V2M</code> c'est la table qui comprend les meta data (modelId voir screenshot colonne de résultat) du formulaire et <code>V2M</code> est l'alias, <code>ON train.documentId=V2M.documentid</code> est la colonne qui contient l'identifiant du document.</p>
+                            <p>Puis <code>V_DOCUMENT doc ON doc.documentId = train.documentId</code>, <code>V_DOCUMENT doc</code> est la table qui contient l'id du document (documentId voir screenshot colonne de résultat).</p>
+                            <p><code>v2_DcmMtDt_0Z14K_p_ptnId_6KYRZ</code> est la table qui contient le patientID qui est indispensable pour que tout fonctionne.</p>
+                            <p><code>idNumber_9LV7R</code> est la colonne qui contient le patientID (patientId voir screenshot colonne de résultat), qui est elle même une colone de <code>v2_DcmMtDt_0Z14K_p_ptnId_6KYRZ</code>.</p>
+                            <p><code><%=SqlParameters.add(AppVars.patientId)%></code> est une variable que l'on recupere dans le details de l'application, voici où on la retrouve:</p>
+                            <img src="./assets/img/variable-appli.png"/>
+                            <p><code>ORDER BY doc.documentId DESC</code> on trie par ordre décroissant de façon a avoir la derniere version du document modifié.</p>
+                            <p><code>AS documentId</code> on attribut un alias au résultat.</p>
+                            <p><code>'Training' AS application</code> cette partie correspond a l'application qui est appelé par la Generique Search (applicationToOpenOnDocumentComplete voir screenshot colonne de résultat) il est rappelé une fois le formualaire remplis.</p>
+                            <p><code>'Training' AS entryPoint</code> cette partie correspond a l'entryPoint qui est appelé par la Generique Search (entryPointToOpenOnDocumentComplete voir screenshot colonne de résultat) il est rappelé une fois le formualaire remplis.</p>
+                            <p><code>'edit' AS editMode</code> et enfin celle-ci permet d'editer le formulaire il faut ajouter a cela (editMode voir screenshot colonne de résultat). </p>
+                            <p>Le screenshot colonne de résultat:</p>
+                            <img src="./assets/img/result-col.png"/>
+                            <h2 class="section-heading">Résultat de la Search :</h2>
+                            <img src="./assets/img/testform.png"/>
+                            <p>On peut constater que le formulaire est bien appelé et on peut donc le remplir, et il y aussi une fonction de sauvegarde des données, lorsque que l'on réouvrira ce formulaire il sera pré-rempli avec les données entré au paravant d'ou le versionage de document et l'appel du dernier utilisé.</p>
+                            <h2 class="section-heading">Generique Search JS</h2>
+                            <p>On souhaite reproduir la même Search mais cette fois avec une majeur partie de javascript on va donc utiliser le code suivant: <br/><br/>
+                            <code>
+                                SELECT <br/> <br/>
+
+                                CLINICAL.modelId,<br/>
+                                CLINICAL.documentId,<br/>
+                                CLINICAL.application,<br/>
+                                CLINICAL.entrypoint,<br/>
+                                CLINICAL.editMode<br/>
+                                <br/>
+                                FROM {{<br/>
+                                <%exec SqlParameters.add(AppVars.get("patientId"))%>
+                                <br/>
+                                var patientId = SqlParameters[1].trim();
+                                <br/>
+                                var logger = org.apache.log4j.Logger.getLogger("training");
+                                <br/>
+                                var context = new javax.naming.InitialContext(),
+                                <br/>
+                                dataSource = context.lookup("java:comp/env/jdbc/orion/repository"),
+                                <br/>
+                                connection = dataSource.getConnection(),
+                                <br/>
+                                resultSet = null;
+                                <br/>
+                                var Results = [];
+                                <br/>
+                                <br/>
+                                
+                                var query = " select 'uuid_d9b88217-d680-4878-abbe-94cbe132e8c1' as modelId, 
+                                <br/>
+                                (select top 1 doc.documentidentifier \
+                                <br/>
+                                FROM v2_TRAINNING_5Q$JT train \
+                                <br/>
+                                INNER JOIN v2_DocumentMetaData_0Z14K V2M on train.documentId=V2M.documentid \
+                                <br/>
+                                INNER JOIN V_DOCUMENT doc ON doc.documentId = train.documentId \
+                                <br/>
+                                INNER JOIN v2_DcmMtDt_0Z14K_p_ptnId_6KYRZ meta ON meta.v2_DocumentMetaData_0Z14K = V2M.v2_DocumentMetaData_0Z14K \
+                                <br/>
+                                where meta.idNumber_9LV7R = '"+patientId+"' ORDER BY doc.documentId DESC) \
+                                <br/>
+                                as documentId, 'Training' as application, 'Training' as entryPoint, 'edit' as editMode";
+                                <br/>
+                                
+                                        var queryPrepStatement = connection.prepareStatement(query);
+                                        <br/>
+                                       try{
+                                        <br/>
+                                        resultSet = queryPrepStatement.executeQuery();
+                                        <br/>
+                                         while(resultSet.next()){ 
+                                            <br/>
+                                             var Result = new Object();
+                                             <br/>
+                                            Result.modelId = resultSet.getString("modelId");
+                                            <br/>
+                                            Result.documentID = resultSet.getString("documentId");
+                                            <br/>
+                                            Result.application = resultSet.getString("application");
+                                            <br/>
+                                            Result.entrypoint = resultSet.getString("entrypoint");
+                                            <br/>
+                                            Result.editMode = resultSet.getString("editMode");
+                                            <br/>
+                                            Results[Results.length] = Result; 
+                                            <br/>
+                                         }
+                                         <br/>
+                                       }
+                                       <br/>
+                                        catch(err){
+                                            <br/>
+                                            logger.error("RGE Progress Notes Search: "+ err);
+                                            <br/>
+                                            throw new Error("Error executing query: "+ err);
+                                            <br/>
+                                       }
+                                       <br/>
+                                       finally{
+                                        <br/>
+                                           if(resultSet) resultSet.close();
+                                           <br/>
+                                           if(connection) connection.close();
+                                           <br/>
+                                       }
+                                       <br/>
+                                
+                                       Results;
+                                       <br/>
+                                }} AS CLINICAL</code></p>
+                                <hr/>
+                                <p><code>CLINICAL.modelId,<br/>CLINICAL.documentId,<br/>CLINICAL.application,<br/>CLINICAL.entrypoint,<br/>CLINICAL.editMode<br/></code> Ces éléments sont les libelés de chaque case du tableau qui compose l'objet.</p>
+                                <p><code>var logger = org.apache.log4j.Logger.getLogger("training")</code> est ce qui nous permet d'avoir les logs d'afficehr sur la partie backend.</p>
+                                <p><code>var context = new javax.naming.InitialContext()</code> est ce qui nous permet d'avoir le context patient c'est à dire c'est ce qui va dans le dossier patient dans lequel nous nous trouvons.</p>
+                                <p><code>dataSource = context.lookup("java:comp/env/jdbc/orion/repository")</code> c'est la base de données dans laquelle on va allez cherchez le formulaire.</p>
+                                <p><code>connection = dataSource.getConnection()</code> c'est ce qui permet la conenction a la base de données.</p>
+                                <p><code>resultSet = null</code> on donne une valeur null au resultSet pour ne pas avoir d'erreur de retour.</p>
+                                <p><code>var Results = []</code> on crée le tableau Results pour pouvoir stocker les données dedans.</p>
+                                <p><code>var query</code> c'est la query SQL qui est appelé.</p>
+                                <p><code>var queryPrepStatement = connection.prepareStatement(query)<br/></code> on prépare la query SQL.</p>
+                                <p><code>try{<br/>
+                                    resultSet = queryPrepStatement.executeQuery();
+                                    <br/>
+                                     while(resultSet.next()){ 
+                                        <br/>
+                                         var Result = new Object();
+                                         <br/>
+                                        Result.modelId = resultSet.getString("modelId");
+                                        <br/>
+                                        Result.documentID = resultSet.getString("documentId");
+                                        <br/>
+                                        Result.application = resultSet.getString("application");
+                                        <br/>
+                                        Result.entrypoint = resultSet.getString("entrypoint");
+                                        <br/>
+                                        Result.editMode = resultSet.getString("editMode");
+                                        <br/>
+                                        Results[Results.length] = Result; 
+                                     }<br/></code> on effectue un try catch, on parcours le tableau resultSet, on crée un objet Result vide, on execute la query SQL puis on remplis notre objet Result avec les resultats de la query et enfin on remplis le tableau Results avec Result que l'on retournera plus tard.</p>
+                                <p><code>catch(err){
+                                    <br/>
+                                    logger.error("RGE Progress Notes Search: "+ err);
+                                    <br/>
+                                    throw new Error("Error executing query: "+ err);<br/></code> cela nous permet d'avoir les logs d'erreurs.</p>
+                                <p><code>finally{
+                                    <br/>
+                                    if(resultSet) resultSet.close();
+                                    <br/>
+                                    if(connection) connection.close();<br/></code>fermeture de resultSet et coupure de la connection a la base de données</p>
+                                <p><code>Results;</code> envoi du tableau Results</p>
+                                <h2 class="section-heading">Conclusion</h2>
+                                <p>J'ai pu approfondir mes connaissances autant sur la partie back-end que sur le langage SQL ainsi que le langage Javascript, l'apprentisage de ces generique search me permettra de travailler lors de mon alternances sur de plus gros projets au sein de l'entreprise toujours accompagné de Xavier.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <div class="mb-4">
+            <a style="display: flex; justify-content: center;" class="btn btn-primary text-uppercase" href="post-testing.html">← PRECEDENT ARTICLES </a>
+            <a style="display: flex; justify-content: center;" class="btn btn-primary text-uppercase" href="post-nouvelles-connaissances.html">PROCHAINE ARTICLES →</a>
+        </div>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://www.linkedin.com/in/axel-boudeau-b2670620b/">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="https://github.com/lexcai">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Boudeau Axel</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
